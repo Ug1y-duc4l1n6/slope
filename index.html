@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope and Intercept Visualizer</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 40px; }
+    #controls { margin-bottom: 20px; }
+    input[type=number] { width: 80px; }
+    canvas { border: 1px solid #333; background: #fafafa; }
+  </style>
+</head>
+<body>
+  <h1>Slope & Intercept Visualizer</h1>
+  <div id="controls">
+    <label>Slope (m): <input id="slope" type="number" step="any" value="1"></label>
+    <label>Intercept (b): <input id="intercept" type="number" step="any" value="0"></label>
+    <button onclick="plotLine()">Plot Line</button>
+  </div>
+  <canvas id="graph" width="500" height="400"></canvas>
+  <script>
+    function plotLine() {
+      const m = parseFloat(document.getElementById('slope').value);
+      const b = parseFloat(document.getElementById('intercept').value);
+      const canvas = document.getElementById('graph');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw axes
+      ctx.strokeStyle = '#aaa';
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height/2);
+      ctx.lineTo(canvas.width, canvas.height/2);
+      ctx.moveTo(canvas.width/2, 0);
+      ctx.lineTo(canvas.width/2, canvas.height);
+      ctx.stroke();
+      // Plot line y = mx + b
+      ctx.strokeStyle = '#0074D9';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      // Map x from -10 to 10
+      const xMin = -10, xMax = 10;
+      const yMin = -8, yMax = 8;
+      function toCanvasX(x) { return (x - xMin) / (xMax - xMin) * canvas.width; }
+      function toCanvasY(y) { return canvas.height - (y - yMin) / (yMax - yMin) * canvas.height; }
+      let first = true;
+      for (let x = xMin; x <= xMax; x += 0.1) {
+        const y = m * x + b;
+        if (y < yMin || y > yMax) continue;
+        const cx = toCanvasX(x);
+        const cy = toCanvasY(y);
+        if (first) { ctx.moveTo(cx, cy); first = false; }
+        else { ctx.lineTo(cx, cy); }
+      }
+      ctx.stroke();
+    }
+    // Initial plot
+    plotLine();
+  </script>
+</body>
+</html>
